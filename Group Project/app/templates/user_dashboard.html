@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F8F8F9;
+            color: #4A4A4A;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+
+        h2 {
+            color: #0A0A0A;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #DDDDDD;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4A90E2;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        footer {
+            background-color: #0A0A0A;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ user.user_name }}</h2>
+
+        <!-- Matched Trainers Section -->
+        <section id="matched-trainers">
+            <h2>Matched Trainers</h2>
+            <table>
+                <tr>
+                    <th>Trainer Name</th>
+                    <th>Trainer Rate</th>
+                    <th>Trainer Availability</th>
+                </tr>
+				{% for match, trainer in matches %}
+					<tr>
+						<td>{{ trainer.trainer_name }}</td>
+						<td>{{ trainer.trainer_rate }}</td>
+						<td>{{ trainer.trainer_availability }}</td>
+					</tr>
+				{% endfor %}
+            </table>
+        </section>
+
+        <!-- Payment History Section -->
+        <section id="payment-history">
+            <h2>Payment History</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Hours</th>
+                    <th>Total</th>
+                    <th>Method</th>
+                </tr>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.payment_date }}</td>
+                    <td>{{ payment.payment_hours }}</td>
+                    <td>{{ payment.payment_total }}</td>
+                    <td>{{ payment.payment_method }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Trainerlink</p>
+    </footer>
+</body>
+</html>

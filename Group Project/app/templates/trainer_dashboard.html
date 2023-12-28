@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trainer Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F8F8F9;
+            color: #4A4A4A;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #DDDDDD;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #4A90E2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        footer {
+            background-color: #0A0A0A;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        h2 {
+            color: #0A0A0A;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Trainer Dashboard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>User Fitness Focus</th>
+                    <th>Session Date</th>
+                    <th>Session Hours</th>
+                    <th>Payment Received</th>
+                    <th>Payment Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in trainer_sessions %}
+                <tr>
+                    <td>{{ session.MatchedUserName }}</td>
+                    <td>{{ session.UserFitnessFocus }}</td>
+                    <td>{{ session.SessionDate }}</td>
+                    <td>{{ session.SessionHours }}</td>
+                    <td>{{ session.PaymentReceived }}</td>
+                    <td>{{ session.PaymentDate }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        <p>&copy; 2023 Trainerlink</p>
+    </footer>	
+</body>
+</html>
