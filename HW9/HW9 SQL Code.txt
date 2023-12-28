@@ -1,0 +1,87 @@
+/* Question 1 & 2 */
+select employee_id, employee_firstname, employee_lastname, employee_jobtitle
+    from fm_employees
+    where employee_jobtitle = 'Store Manager'
+        or employee_jobtitle = 'Owner'
+
+drop index if exists ix_employee_jobtitle on fm_employees
+create index ix_employee_jobtitle on fm_employees (employee_jobtitle)
+
+/* Question 3 */
+select employee_jobtitle, avg(employee_hourlywage) as avg_pay
+    from fm_employees
+    group by employee_jobtitle
+
+/* Question 4 */
+use vbay
+go
+
+select item_id, item_name,
+    dense_rank() over 
+        (partition by item_name order by bid_datetime) as bid_order,
+    bid_amount, 
+    lag(user_firstname + ' ' + user_lastname) over
+        (partition by item_name order by bid_datetime) as prev_bidder,
+    user_firstname + ' ' + user_lastname as bidder,
+    lead(user_firstname + ' ' + user_lastname) over 
+        (partition by item_name order by bid_datetime) as next_bidder
+    from vb_items
+        join vb_bids on item_id = bid_item_id
+        join vb_users on bid_user_id = user_id
+    where bid_status = 'ok'
+
+/* Question 5 */
+drop index if exists ix_vb_bids_nonc on vb_bids
+go 
+
+create nonclustered index ix_vb_bids_nonc on vb_bids (bid_status, bid_item_id)
+    include (bid_user_id, bid_datetime, bid_amount)
+go
+
+/* Question 6 */
+use fudgemart_v3
+go
+
+create view v_orders
+    with schemabinding 
+    as 
+        select 
+            cast(o.order_id as varchar) + 'and' + cast(p.product_id as varchar) as id,
+            c.customer_state, c.customer_firstname + ' ' + c.customer_lastname as customer_name,
+            datepart(year, order_date) as order_year, o.order_id, o.ship_via,
+            od.order_qty as order_detail_qty, od.order_qty * p.product_retail_price as order_detail_extd_price,
+            p.product_id, p.product_name, p.product_department
+        from dbo.fm_orders o 
+        join dbo.fm_customers c on o.customer_id = c.customer_id
+        join dbo.fm_order_details od on o.order_id = od.order_id
+        join dbo.fm_products p on p.product_id = od.product_id
+go
+
+select * from v_orders
+
+/* Question 7 */
+drop index if exists ix_v_orders on v_orders
+go 
+
+create unique clustered index ix_v_orders on v_orders(id)
+
+select * from v_orders noexpand
+go
+
+/* Question 8 */
+drop index if exists colix_v_orders on v_orders
+go
+
+create columnstore index colix_v_orders on v_orders (
+    id, customer_state, customer_name, order_year, order_id,
+    ship_via, order_detail_qty, order_detail_extd_price,
+    product_id, product_name, product_department
+)
+go 
+
+select product_name, sum(order_detail_qty)
+    from v_orders with (noexpand)
+    group by product_name
+
+select distinct customer_name, product_department
+    from v_orders with (noexpand)
